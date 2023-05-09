@@ -1,6 +1,55 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <script>
+  let chart = {
+    init: function(){
+      $.ajax({
+        url:'/chart',
+        success:function(result){
+          chart.display(result);
+        }
+      })
+    },
+    display:function(result){
+      Highcharts.chart('myAreaChart', {
+        chart: {
+          type: 'line'
+        },
+        title: {
+          text: '2020년 성별에 따른 월별 구매량'
+        },
+        subtitle: {
+          text: 'Source: ' +
+                  '<a href="https://en.wikipedia.org/wiki/List_of_cities_by_average_temperature" ' +
+                  'target="_blank">Wikipedia.com</a>'
+        },
+        xAxis: {
+          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+          title: {
+            text: '총 구매금액(원)'
+          }
+        },
+        plotOptions: {
+          line: {
+            dataLabels: {
+              enabled: true
+            },
+            enableMouseTracking: false
+          }
+        },
+        series: [{
+          name: '여성',
+          data: result.female
+        }, {
+          name: '남성',
+          data: result.male
+        }]
+      });
+
+    }
+  };
   let websocket_center = {
     stompClient:null,
     init:function(){
@@ -33,6 +82,7 @@
     }
   };
   $(function(){
+    chart.init();
     websocket_center.init();
   })
 </script>
@@ -196,7 +246,7 @@
         <!-- Card Body -->
         <div class="card-body">
           <div class="chart-area">
-            <canvas id="myAreaChart"></canvas>
+            <div id="myAreaChart"></div>
           </div>
         </div>
       </div>
